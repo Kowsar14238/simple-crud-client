@@ -1,19 +1,38 @@
-import './App.css'
+import "./App.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  const handleAddUser = event =>{
-    event.PreventDefault();
+  const notify = () => toast("Users added successfully");
+
+  const handleAddUser = (event) => {
+    event.preventDefault();
     const form = event.target;
     const name = form.name.value;
     const email = form.email.value;
-    const user = {name , email};
+    const user = { name, email };
     console.log(user);
-  }
+
+    fetch("http://localhost:5000/users", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.insertedId) {
+          form.reset();
+          notify(); // Trigger toast notification
+        }
+      });
+  };
 
   return (
     <>
-      <h1>Simple Crud</h1>
-
+      <h1>Simple CRUD</h1>
       <form onSubmit={handleAddUser}>
         <input type="text" name="name" id="" />
         <br />
@@ -21,9 +40,9 @@ function App() {
         <br />
         <input type="submit" value="Add User" />
       </form>
-      
+      <ToastContainer /> {/* Render ToastContainer here */}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
